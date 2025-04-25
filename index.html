@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patak - A Cigány Orvosálom</title>
+    <style>
+        :root {
+            --neon-pink: #ff6ec7;
+            --neon-blue: #00f7ff;
+            --neon-purple: #b300ff;
+            --neon-yellow: #ffcc00;
+            --neon-green: #66ff66;
+            --neon-orange: #ff9933;
+            --dark-bg: #121212;
+            --darker-bg: #0a0a0a;
+            --text-color: #e0e0e0;
+        }
+        
+        body {
+            font-family: 'Rajdhani', 'Arial Narrow', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        
+        .page {
+            display: none;
+            min-height: 100vh;
+            padding: 20px;
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        .active-page {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes neonGlow {
+            0%, 100% { text-shadow: 0 0 5px var(--neon-pink), 0 0 10px var(--neon-pink), 0 0 20px var(--neon-pink); }
+            50% { text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue), 0 0 30px var(--neon-blue); }
+        }
+        
+        @keyframes borderGlow {
+            0%, 100% { box-shadow: 0 0 10px 2px var(--neon-purple); border-color: var(--neon-pink); }
+            50% { box-shadow: 0 0 15px 3px var(--neon-blue); border-color: var(--neon-blue); }
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--darker-bg) 0%, #1a1a1a 100%);
+            padding: 30px;
+            text-align: center;
+            border-bottom: 3px solid var(--neon-pink);
+            margin-bottom: 30px;
+            animation: borderGlow 3s infinite alternate;
+        }
+        
+        h1 {
+            color: var(--neon-pink);
+            font-size: 3rem;
+            margin: 0;
+            animation: neonGlow 3s infinite alternate;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        
+        .subtitle {
+            color: var(--neon-blue);
+            font-size: 1.2rem;
+            margin-top: 10px;
+            text-shadow: 0 0 8px var(--neon-blue);
+        }
+        
+        nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 20px;
+            background-color: rgba(10, 10, 10, 0.8);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+            border-bottom: 1px solid var(--neon-purple);
+        }
+        
+        .nav-btn {
+            background: none;
+            border: 2px solid var(--neon-purple);
+            color: var(--neon-blue);
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-btn:hover {
+            background-color: var(--neon-purple);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(179, 0, 255, 0.4);
+        }
+        
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(179, 0, 255, 0.4), transparent);
+            transition: 0.5s;
+        }
+        
+        .nav-btn:hover::before {
+            left: 100%;
+        }
+        
+        .section {
+            background-color: rgba(30, 30, 30, 0.7);
+            border: 1px solid var(--neon-purple);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            animation: borderGlow 5s infinite alternate;
+            transition: transform 0.3s ease;
+        }
+        
+        .section:hover {
+            transform: scale(1.01);
+        }
+        
+        h2 {
+            color: var(--neon-pink);
+            border-bottom: 2px dashed var(--neon-blue);
+            padding-bottom: 10px;
+            margin-top: 0;
+            font-size: 2rem;
+            text-shadow: 0 0 10px rgba(255, 110, 199, 0.5);
+        }
+        
+        h3 {
+            color: var(--neon-blue);
+            margin-top: 25px;
+            font-size: 1.5rem;
+        }
+        
+        h4 {
+            color: var(--neon-yellow);
+            margin-top: 20px;
+            font-size: 1.3rem;
+        }
+        
+        p, li {
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+        
+        .quote {
+            font-style: italic;
+            border-left: 4px solid var(--neon-purple);
+            padding-left: 20px;
+            margin: 20px 0;
+            color: #ccc;
+            background-color: rgba(20, 20, 20, 0.5);
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            position: relative;
+        }
+        
+        .quote::before {
+            content: '"';
+            font-size: 3rem;
+            color: var(--neon-purple);
+            position: absolute;
+            left: 10px;
+            top: 5px;
+            opacity: 0.3;
+        }
+        
+        .gypsy {
+            color: var(--neon-yellow);
+            font-weight: bold;
+            text-shadow: 0 0 5px var(--neon-yellow);
+        }
+        
+        .romanian {
+            color: var(--neon-orange);
+            font-weight: bold;
+            text-shadow: 0 0 5px var(--neon-orange);
+        }
+        
+        .negro {
+            color: var(--neon-green);
+            font-weight: bold;
+            text-shadow: 0 0 5px var(--neon-green);
+        }
+        
+        .highlight {
+            background: linear-gradient(90deg, transparent, var(--neon-purple), transparent);
+            background-size: 200% auto;
+            animation: shine 3s linear infinite;
+            padding: 0 5px;
+        }
+        
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px;
+            margin-top: 50px;
+            border-top: 1px solid var(--neon-purple);
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 50px;
+            margin: 30px 0;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, var(--neon-purple), var(--neon-blue));
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+            padding-left: 30px;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 12px;
+            top: 5px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: var(--neon-pink);
+            border: 3px solid var(--neon-blue);
+            z-index: 1;
+        }
+        
+        .timeline-date {
+            color: var(--neon-yellow);
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .fact-box {
+            background-color: rgba(179, 0, 255, 0.1);
+            border-left: 4px solid var(--neon-green);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .fact-title {
+            color: var(--neon-green);
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .nav-btn { padding: 10px 15px; font-size: 0.9rem; }
+            .section { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="pulse">
+        <h1>Patak Gergő</h1>
+        <div class="subtitle">A <span class="gypsy">cigány</span> <span class="romanian">román</span> <span class="negro">néger</span> orvosálom</div>
+    </header>
+    
+    <nav>
+        <button class="nav-btn" onclick="showPage('szuletes')">Születés</button>
+        <button class="nav-btn" onclick="showPage('elet')">Élettörténet</button>
+        <button class="nav-btn" onclick="showPage('szarmazas')">Származás</button>
+        <button class="nav-btn" onclick="showPage('cigany')">Cigánysága</button>
+        <button class="nav-btn" onclick="showPage('szex')">Szexualitás</button>
+        <button class="nav-btn" onclick="showPage('orvos')">Orvosálom</button>
+        <button class="nav-btn" onclick="showPage('kritika')">Kritika</button>
+        <button class="nav-btn" onclick="showPage('kozmondasok')">Közmondások</button>
+        <button class="nav-btn" onclick="showPage('titkok')">Titkok</button>
+        <button class="nav-btn" onclick="showPage('galeria')">Galéria</button>
+    </nav>
+    
+    <!-- Születés oldal -->
+    <div id="szuletes" class="page">
+        <div class="section floating">
+            <h2>Születési körülmények</h2>
+            <p>A <span class="gypsy">cigány</span> messiás 2009. január 9-én, egy különösen hideg téli éjszakán látott napvilágot Szeged legromább negyedében. Az eseményt megelőzően több jósnő is megjósolta, hogy egy különleges gyermek fog megszületni - bár valószínűleg csak azért, hogy ingyen pálinkát kapjanak.</p>
+            
+            <div class="fact-box">
+                <div class="fact-title">Tény, amit nem tudsz Patak születéséről:</div>
+                <p>A szülés közben anyja annyit káromkodott, hogy a szülésznő felajánlotta, hogy visszadugja a babát és várjanak még egy évet.</p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>Mit mond a legenda?</h3>
+            <p>A legenda szerint Patak anyja álmában megjelent neki a <span class="romanian">román</span> <span class="negro">néger</span> szellem, aki azt jósolta, hogy gyermeke vagy világhírű orvos lesz, vagy a helyi piac királya. Mivel az utóbbihoz nem kell érettségi, mindent megtesznek azért, hogy az első opció valósuljon meg.</p>
+            
+            <div class="quote">
+                "Amikor megszülettem, az orvosok csak néztek, hogy hogy lehet valaki ennyire <span class="gypsy">cigány</span>, <span class="romanian">román</span> ÉS <span class="negro">néger</span> egyszerre. Aztán rájöttek, hogy ez csak a kosz."<br>- Patak visszaemlékezése
+            </div>
+            
+            <h4>Születési adatok:</h4>
+            <ul>
+                <li><strong>Időpont:</strong> 2009. január 9. 03:15-kor (pont mikor a kórházi portás elaludt)</li>
+                <li><strong>Helyszín:</strong> Szegedi "Inkább ne szülj itt" Kórház</li>
+                <li><strong>Súly:</strong> 4.2 kg (ebből 3 kg cigány büszkeség)</li>
+                <li><strong>Hossz:</strong> 52 cm (plusz 10 cm haj, ami mára már eltűnt)</li>
+                <li><strong>Első szavak:</strong> "Ez ingyen van?" és "Nem én voltam!"</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h3>Valóság vagy kitaláció?</h3>
+            <p>Az igazság az, hogy Patak valójában egy elhagyott romániai árva volt, akit egy cirkusz hagyott hátra, miután rájöttek, hogy a "törpe <span class="negro">néger</span> <span class="gypsy">cigány</span>" mutatvány nem hoz annyi pénzt, mint remélték. A Kiss család fogadta örökbe, főként azért, mert a gyámügyi támogatás jól jött volna a heti lottószelvényekre.</p>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <span class="timeline-date">2008. december</span>
+                    <p>A romániai cirkusz elhagyja Patakot egy szegedi kukában, miután rájönnek, hogy túl fehér a bőre a mutatványnak</p>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-date">2009. január 9.</span>
+                    <p>Hivatalos születési dátum, amit a Kiss család kitalált, hogy elfedjék az örökbefogadást</p>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-date">2009. január 10.</span>
+                    <p>Első bűnügyi nyomozás Patak ellen - ellopta az anyja cigijét</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Élettörténet oldal -->
+    <div id="elet" class="page" style="display:none;">
+        <div class="section">
+            <h2>Élettörténet - A Patak útvesztő</h2>
+            
+            <div class="fact-box">
+                <div class="fact-title">Életút összefoglaló:</div>
+                <p>0-6 év: Kis korú bűnözőként tevékenykedett<br>
+                7-14 év: Általános iskolai terrorizálás<br>
+                15-16 év: Gimnáziumi álmodozás orvosi karrierről<br>
+                Jövő: Valószínűleg a helyi piac "orvosa" lesz</p>
+            </div>
+            
+            <h3>0-6 éves kor: A kialakuló legendák</h3>
+            <p>Patak első szavai nem a klasszikus "anya" és "apa" voltak, hanem "adomány" és "rendőr". Már kisgyermekként kitűnt tehetségével a helyi piacon, ahol segített a rokonoknak "árukat értékesíteni".</p>
+            
+            <h4>Fontos mérföldkövek:</h4>
+            <ul>
+                <li><strong>2 éves kor:</strong> Első börtönlátogatás (anyját kereste)</li>
+                <li><strong>3 éves kor:</strong> Első sikeres kerékpárlopás</li>
+                <li><strong>4 éves kor:</strong> Első iskolai felfüggesztés (még óvodában)</li>
+                <li><strong>5 éves kor:</strong> Első orvosi álom (miután megnézte a Doktor House-t)</li>
+                <li><strong>6 éves kor:</strong> Első szerelmi csalódás (a kutyája inkább anyját szerette)</li>
+            </ul>
+            
+            <div class="quote">
+                "Mikor 4 éves voltam, már tudtam, hogy orvos leszek. Akkor is, amikor a rendőr megkérdezte, hogy honnan van az új biciklim."<br>- Patak gyermekkori emlékei
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>7-14 éves kor: Az iskolai évek</h3>
+            <p>Általános iskolában Patak hamar felhívta magára a figyelmet azzal, hogy minden biológia órán arról beszélt, hogy ő majd orvos lesz. Ez különösen vicces volt, mivel a matek dolgozataiból soha nem ért el 2-nél magasabb pontszámot.</p>
+            
+            <p>Kiemelkedett az osztályban humorával is, amikor azt állította, hogy a "biológia" szó valójában a "<span class="gypsy">cigány</span> logika" rövidítése.</p>
+            
+            <h4>Iskolai eredmények:</h4>
+            <ul>
+                <li><strong>Biológia:</strong> 4-es (csak mert a tanár sajnálta)</li>
+                <li><strong>Matematika:</strong> 1-es (állandó)</li>
+                <li><strong>Magyar nyelv:</strong> 2-es (a töri tanár javította)</li>
+                <li><strong>Tesi:</strong> 5-ös (mindig ellopta a jegyzőkönyvet)</li>
+                <li><strong>Viselkedés:</strong> 3-as (a tanárok félték a családját)</li>
+            </ul>
+            
+            <div class="fact-box">
+                <div class="fact-title">Ismeretlen tény:</div>
+                <p>Patak volt az egyetlen gyerek az iskolában, akitől a tanárok pénzt kértek, hogy ne járjon be órára.</p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>15-16 éves kor: A Deák Ferenc Gimnázium "dicsősége"</h3>
+            <p>Valahogy sikerült bekerülnie a Deák Ferenc Gimnáziumba, ahol most a 10.G osztály "díszét" képezi. Az osztálytársai szeretnek viccelődni azzal, hogy "G" valójában a "<span class="gypsy">g</span>enya" rövidítése.</p>
+            
+            <div class="quote">
+                "Ha Patak orvos lesz, én inkább meghalok egészségesen!"<br>- Osztálytársak
+            </div>
+            
+            <h4>Gimnáziumi hírnév:</h4>
+            <ul>
+                <li>Az egyetlen diák, aki a biosz órán a saját vérért kiabált segítségért</li>
+                <li>Egyszer megpróbálta eladni a kémia laboratóriumot román lomisoknak</li>
+                <li>Az iskola újságjában "Legvalószínűtlenebb orvosjelölt" címmel szerepelt</li>
+                <li>Minden évben megkéri a titkárságot, hogy változtassák át a nevét "Dr. Patakra"</li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- Származás oldal -->
+    <div id="szarmazas" class="page" style="display:none;">
+        <div class="section">
+            <h2>SZÁRMAZÁS - A VÉRVISZONYOK TITKAI</h2>
+            
+            <p>Patak származása rejtélyekbe burkolózik, mint egy romániai bűnügy. Hivatalosan Kiss Gergő, de valódi identitása sokkal bonyolultabb.</p>
+            
+            <div class="fact-box">
+                <div class="fact-title">DNS-vizsgálat eredménye:</div>
+                <p>35% <span class="gypsy">cigány</span>, 25% <span class="romanian">román</span>, 20% <span class="negro">néger</span>, 15% kutyafa, 5% ismeretlen (valószínűleg űrlény)</p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>Apai ág: A romániai lábnyomok</h3>
+            <p>Apja valószínűleg egy romániai cirkuszművész volt, aki speciálisan a "törpe <span class="negro">néger</span> <span class="gypsy">cigány</span>" mutatványban szerepelt. Azonban a cirkusz elhagyta őt, amikor rájöttek, hogy Patak:</p>
+            <ul>
+                <li>Túl fehér a bőre a mutatványnak</li>
+                <li>Túl magas (már 150 cm-nél is több)</li>
+                <li>Nem tud igazi románul, csak a szitkokat</li>
+                <li>Inkább lopni szeretett, mint mutatványozni</li>
+            </ul>
+            
+            <div class="quote">
+                "A román vér nem hazudik - mindig érzem, mikor kell elrohanni a rendőrök elől!"<br>- Patak a származásáról
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>Anyai ág: A szegedi gyökerek</h3>
+            <p>Anyja, Kiss Marika egy híres személyiség Szeged roma negyedében. Főként arról híres, hogy:</p>
+            <ul>
+                <li>7 különböző férjétől van 12 gyereke (Patak a 13., a szerencsétlen)</li>
+                <li>Egyszer megnyerte a "Legjobb cigány pörkölt" versenyt (bár ellopták a receptet)</li>
+                <li>Képes volt egy egész kórházi osztályt kiüldözni, mikor szült</li>
+                <li>Az egyetlen ember, akitől Patak is fél</li>
+            </ul>
+            
+            <h4>Anyai tanácsok Pataknak:</h4>
+            <ol>
+                <li>"Ha orvos leszel, győzz meg egy gazdag nőt, hogy hozzád menjen!"</li>
+                <li>"Ne felejtsd el a családot, ha egyszer gazdag leszel!"</li>
+                <li>"Ha nem sikerül az orvosi, legalább legyél temetkezési vállalkozó!"</li>
+                <li>"A fehér köpeny jól fog állni neked, főleg ha nem lesz rajta vér!"</li>
+            </ol>
+        </div>
+        
+        <div class="section">
+            <h3>Családi titkok</h3>
+            <p>A Kiss család mögött rejtőző sötét titkok:</p>
+            <ul>
+                <li>Patak valódi apja valójában a helyi börtönőr lehet</li>
+                <li>Anyja egyszer elárulta, hogy "Kiss" a családnév sem az övék</li>
+                <li>Van egy ikertestvére, akit eladtak egy román családnak</li>
+                <li>A családi címer valójában egy lopott kerékpár</li>
+            </ul>
+            
+            <div class="fact-box">
+                <div class="fact-title">Családi mottó:</div>
+                <p>"Aki nem lop, az nem is él!"</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Cigányság oldal -->
+    <div id="cigany" class="page" style="display:none;">
+        <div class="section">
+            <h2>CIGÁNYSÁGA - A VÉRÜKBEN VAN</h2>
+            
+            <p>Patak <span class="gypsy">cigánysága</span> nem csak vérbeli, hanem lelki tulajdonság is. Minden porcikájában ott van a roma büszkeség, még ha próbálja is tagadni.</p>
+            
+            <div class="quote">
+                "Én nem vagyok <span class="gypsy">cigány</span>! Én csak... sötétbőrű mediterrán vagyok, aki szeret énekelni és táncolni, és néha ellop dolgokat."<br>- Patak a származásáról
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>Cigány tulajdonságai</h3>
+            <p>Patak jellemzői, amik igazolják <span class="gypsy">cigányságát</span>:</p>
+            <ul>
+                <li><strong>Zenei tehetség:</strong> Az egyetlen ember, aki képes elrontani egy cigányzenét</li>
+                <li><strong>Üzleti érzék:</strong> Mindent el tud adni, még azt is, ami nem az övé</li>
+                <li><strong>Családi értékek:</strong> Mindig tudja, melyik rokonnál lehet enni ingyen</li>
+                <li><strong>Sportteljesítmény:</strong> Világrekord a rendőrök elől való futásban</li>
+                <li><strong>Nyelvismeret:</strong> Beszél 3 nyelven: magyarul, cigányul és románul (mindhármat rosszul)</li>
+            </ul>
+            
+            <div class="fact-box">
+                <div class="fact-title">Cigány horoszkóp:</div>
+                <p>Patak a "Lopó Bika" jegyében született, ami magyarázza a pénz iránti vonzalmát és a rendőrök elől való futás képességét.</p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>Cigány hagyományok ápolása</h3>
+            <p>Hogy Patak ápolja <span class="gypsy">cigányságának</span> hagyományait:</p>
+            <ol>
+                <li>Minden évben megrendezi a "Nem lopok semmit" napot (csak ezen a napon)</li>
+                <li>Családi összejöveteleken mindig ő viszi a legolcsóbb ajándékot</li>
+                <li>Folyamatosan gyakorolja a "Nem én voltam" kifejezést különböző nyelveken</li>
+                <li>Megtanulta a cigánytáncot, de csak akkor mutatja, ha pénzt ígérnek neki</li>
+                <li>Mindig van nála egy aranyfoga, amit csak különleges alkalmakkor visel</li>
+            </ol>
+        </div>
+        
+        <div class="section">
+            <h3>Cigánybotrányok</h3>
+            <p>Patak legnagyobb <span class="gypsy">cigány</span> botrányai:</p>
+            <ul>
+                <li>Egyszer megpróbálta eladni a saját osztálytársait román rabszolgakereskedőknek</li>
+                <li>Az iskolai farsangon "Cigánykereskedő" jelmezben jelent meg</li>
+                <li>Ellopta a saját anyja nyakláncát, majd visszaadta neki ajándékba</li>
+                <li>Megpróbálta bejegyeztetni a "Dr. Cigány" nevet hivatalosan</li>
+                <li>A biosz órán azt állította, a <span class="gypsy">cigány</span> vér különleges, mert ellenáll az igazságnak</li>
+            </ul>
+            
+            <div class="quote">
+                "A <span class="gypsy">cigányság</span> nem bűn! Kivéve az én esetemben, mert nálam tényleg az."<br>- Patak egy vallomása
+            </div>
+        </div>
+    </div>
+    
+    <!-- Szexualitás oldal -->
+    <div id="szex" class="page" style="display:none;">
+        <div class="section">
+            <h2>Szexualitás - A forró vérű <span class="romanian">román</span> <span class="gypsy">cigány</span></h2>
+            
+            <p>Patak híres arról, hogy minden lányt "elbűvöl" a <span class="gypsy">cigány</span> bájával és a <span class="romanian">román</span> sármjával. Legalábbis ezt gondolja. A valóságban a lányok inkább futnak tőle, mint a tűzoltók a gyújtogató elől.</p>
+            
+            <div class="quote">
+                "A nők olyanok, mint a sebek - vagy megfertőződnek tőlem, vagy én fertőzök meg őket."<br>- Patak flörtölési kísérlete
+            </div>
+            
+            <div class="fact-box">
+                <div class="fact-title">Szexuális statisztikák:</div>
+                <p>Partnerkeresési sikeresség: 0%<br>
+                Sikeres randik száma: 0<br>
+                Lányok, akik visszautasították: Mind<br>
+                Képzeletbeli barátnők: 3 (Suzie, Cintia és Dr. Laura)</p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>Flörtölési technikák</h3>
+            <p>Patak különleges flörtölési módszereket fejlesztett ki:</p>
+            <ul>
+                <li>Megmutatja a lánynak a biológia jegyzeteit ("Nézd, milyen szép a máj rajzom!")</li>
+                <li>Elmeséli, hogy ő majd mennyi pénzt fog keresni orvosként</li>
+                <li>Megkínálja a saját főztjével (ami valójában anyukája főztje)</li>
+                <li>Felajánlja, hogy ingyen korrepetálja biológiából</li>
+                <li>Megígéri, hogy a jövőben ingyen kezeli a lány családját (mint orvos)</li>
+                <li>Elmondja, hogy milyen jó apja lenne (bár a kutyája is utálja)</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h3>Nagy szerelmi kudarcok</h3>
+            <p>Patak élete legnagyobb szerelmi kudarcai:</p>
+            <ol>
+                <li>Amikor a lány, akit 3 hónapja "udvarolt", kiderült hogy csak kedves volt vele, mert sajnálta</li>
+                <li>Amikor a Valentin-napi ajándékát (egy használt biológia könyvet) visszadobták az arcába</li>
+                <li>Amikor rájött, hogy a "barátnője", akiről mindig mesélt, valójában csak képzeletbeli</li>
+                <li>Amikor a lány, akit randira hívott, inkább feljelentette zaklatásért</li>
+                <li>Amikor az iskolai színjátszó csoportba jelentkezett, hogy közelebb kerüljön a lányokhoz, de csak kosztümös lett</li>
+            </ol>
+        </div>
+        
+        <div class="section">
+            <h3>Jövőbeli tervek</h3>
+            <p>Patak tervei a szerelmi életben:</p>
+            <ul>
+                <li>Megtalálni azt a lányt, aki képes elviselni</li>
+                <li>Ha ez nem sikerül, talán talál egy vak nőt</li>
+                <li>Végül ha minden kötél szakad, feleségül veszi a biológia tankönyvét</li>
+                <li>Reménykedik, hogy orvosként több esélye lesz a nőknél (bár ez is csak álom)</li>
+            </ul>
+            
+            <div class="quote">
+                "Egyszer találok egy nőt, aki úgy szeret, ahogy vagyok. Vagy legalább egy nőt, aki nem fut el tőlem."<br>- Patak a jövőről
+            </div>
+        </div>
+    </div>
+    
+    <!-- Orvosálom oldal -->
+    <div id="orvos" class="page" style="display:none;">
+        <div class="section">
+            <h2>Az orvosálom - A biológia szerelmese</h2>
+            
+            <p>Patak álma, hogy orvos legyen. Ez különösen érdekes, mert:</p>
+            <ul>
+                <li>Képtelen megjegyezni, hogy melyik kézben kell tartani a villát</li>
+                <li>Mikor utoljára vágta meg az ujját, sírva futott anyukájához</li>
+                <li>Azt hiszi, a "CT" az valami <span class="gypsy">cigány</span> rövidítés</li>
+                <li>Vérlátását tekintve inkább elájul, mint hogy segítene</li>
+                <li>Azt hiszi, a "sebészet" valami fűszerészet</li>
+                <li>Mikor először láttak vérvizsgálatot, azt hitte, hogy valami újfajta ital</li>
+            </ul>
+            
+            <div class="fact-box">
+                <div class="fact-title">Orvosi képességek:</div>
+                <p>Diagnosztizálás: 0/10<br>
+                Empatia: 1/10 (csak ha pénzt ígérnek)<br>
+                Vérlátás: -5/10<br>
+                Fogorvosi potenciál: 2/10 (van aranyfoga)<br>
+                Általános tudás: 3/10 (a biosz könyv címlapját elolvasta)</p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>Miért akar orvos lenni?</h3>
+            <p>Az igazság az, hogy Patak csak a magas orvosi fizetés miatt akar orvos lenni. Azt hiszi, hogy az orvosok csak ülnek és nézik, ahogy más dolgozik - ami valójában a <span class="gypsy">cigány</span> álommeló lenne.</p>
+            
+            <div class="quote">
+                "Az orvosoknak annyi pénzük van, hogy még a fehér köpenyük is Armani!"<br>- Patak a jövőbeli karrierjéről
+            </div>
+            
+            <h4>Top 5 ok, amiért Patak orvos akar lenni:</h4>
+            <ol>
+                <li>A pénz (főleg a pénz)</li>
+                <li>A fehér köpeny jól mutatna Instagramon</li>
+                <li>Úgy gondolja, a nők imádják az orvosokat</li>
+                <li>Azt hiszi, az orvosoknak joguk van bárkit megkopasztani</li>
+                <li>Anyja azt mondta, hogy vagy orvos lesz, vagy kiteszi az utcára</li>
+            </ol>
+        </div>
+        
+        <div class="section">
+            <h3>Valószínűség a sikerre</h3>
+            <p>Matematikai elemzés szerint Patak orvosi karrierjének esélyei:</p>
+            <div style="background: linear-gradient(90deg, #ff0000 0%, #ff0000 5%, #00ff00 100%); height: 30px; border-radius: 15px; position: relative; margin: 20px 0;">
+                <div style="position: absolute; left: 5%; top: 50%; transform: translateY(-50%); color: white; font-weight: bold;">5%</div>
+            </div>
+            <p>Ez az 5% főként annak köszönhető, hogy valaki összetéveszti a gyógyszereket, és véletlenül felveszik orvira.</p>
+            
+            <h4>Alternatív karrierlehetőségek:</h4>
+            <ul>
+                <li><strong>Gyógyszerész:</strong> Túl sok számolás</li>
+                <li><strong>Ápoló:</strong> Túl sok munka</li>
+                <li><strong>Fogorvos:</strong> Csak az aranyfogaira specializálódhatna</li>
+                <li><strong>Masszőr:</strong> Senki nem akarja, hogy hozzáérjen</li>
+                <li><strong>Temetkezési vállalkozó:</strong> Az egyetlen, ahol a "hideg vér" előny</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h3>Orvosi álomvilág</h3>
+            <p>Hogy képzeli el Patak az orvosi életét:</p>
+            <ul>
+                <li>Díszes fehér köpenyben fog járni, ami eltakarja a hasát</li>
+                <li>Minden nővér rajongani fog érte (legalábbis az álmaiban)</li>
+                <li>Napi 2 órát fog dolgozni, a többit a kórházi étkezdében tölti</li>
+                <li>Minden beteget pénzért fog kezelni (még a sürgősségit is)</li>
+                <li>A saját védjegyét fogja használni: "Dr. Patak - Ha nem gyógyít meg, legalább nem fáj tovább"</li>
+            </ul>
+            
+            <div class="quote">
+                "Én másképp fogok orvos lenni! Kevesebbet dolgozok, többet keresek, és minden nővér velem akar majd lenni!"<br>- Patak az álommelójáról
+            </div>
+        </div>
+    </div>
+    
+    <!-- Kritika oldal -->
+    <div id="kritika" class="page" style="display:none;">
+        <div class="section">
+            <h2>Kritika - Minden ami Patak (és rossz)</h2>
+            
+            <h3>Tanulmányi előmenetele</h3>
+            <p>Patak úgy hivatkozik magára, mint "szorgalmas tanuló", ami valójában annyit tesz, hogy néha felnyitja a könyvet, mielőtt aludni menne. Az igazság az, hogy a "G" az osztályjelzésében valójában a "gátlástalan másoló"-ra utal.</p>
+            
+            <div class="fact-box">
+                <div class="fact-title">Tanulmányi statisztikák:</div>
+                <p>Átlag: 2.3 (de csak mert a tanárok félték a családját)<br>
+                Legjobb tárgy: Biológia (4-es, mert a tanár sajnálta)<br>
+                Legrosszabb tárgy: Matematika (1-es, de legalább állandó)<br>
+                Legtöbb osztálytárs: "Nem ülnek mellé"</p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>Igazságérzete</h3>
+            <p>Patak állítja, hogy erős igazságérzettel rendelkezik. Ez valójában annyit jelent, hogy ha valaki nem ad neki pénzt, az igazságtalan. Minden más kisebbséggel szembeni sértést valóban ellenez - kivéve persze, ha ő maga mondja.</p>
+            
+            <div class="quote">
+                "Én mindenkit egyformán kezelek! Kivéve azokat, akik nem adnak nekem pénzt, azok gecijók."<br>- Patak az igazságérzetéről
+            </div>
+            
+            <h4>Patak igazságérzetének működése:</h4>
+            <ul>
+                <li>Ha ő lop, az oké, mert "<span class="gypsy">cigány</span> szokás"</li>
+                <li>Ha más lop tőle, az bűn, mert "az én dolgom"</li>
+                <li>Ha valaki rasszista vele, az rossz</li>
+                <li>Ha ő rasszista másokkal, az csak "vicc"</li>
+                <li>Az igazság mindig az, ami neki épp jó</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h3>Testsúly problémái</h3>
+            <p>Patak arról álmodozik, hogy "ne hízzon el" és "jó alakja legyen". Ez különösen vicces, ha megnézzük napi étkezési szokásait, ami főleg tészta, chips és energiaital körforgása. Az edzés nála annyit tesz, hogy felmegy a lépcsőn a konyhába.</p>
+            
+            <h4>Patak fitness rutinja:</h4>
+            <ul>
+                <li><strong>Reggel:</strong> Felkelés (már ez is fárasztó)</li>
+                <li><strong>Edzés:</strong> Ujjgyakorlat a TV irányítóval</li>
+                <li><strong>Kardio:</strong> Futás a pizzáért</li>
+                <li><strong>Erőnlét:</strong> Hordás a saját testsúlyának</li>
+                <li><strong>Nyújtás:</strong> A kanapéról a hűtőig</li>
+            </ul>
+            
+            <div class="quote">
+                "Én nem vagyok kövér, csak jól felszerelt! És a zsír is felszerelés."<br>- Patak a testalkatáról
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>Szociális készségek</h3>
+            <p>Patak emberi kapcsolatai katasztrofálisak, ami főként a következőknek köszönhető:</p>
+            <ul>
+                <li>Minden beszélgetést a saját orvosi álmairól kezd</li>
+                <li>Minden nővel flörtöl, még a tanárokkal is</li>
+                <li>Állandóan pénzt kér kölcsön, de soha nem ad vissza</li>
+                <li>Mindenki más problémáját lekicsinyli az ő orvosi álmaihoz képest</li>
+                <li>Ha valaki nem értene vele egyet, azonnal <span class="gypsy">cigány</span> kártyát húz</li>
+            </ul>
+            
+            <div class="fact-box">
+                <div class="fact-title">Szociális statisztikák:</div>
+                <p>Barátok száma: 1 (képzeletbeli)<br>
+                Randik száma: 0<br>
+                Osztálytársak, akik elviselik: 2 (és mindkettő rosszul lát)<br>
+                Tanárok, akik bírják: 0</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Közmondások oldal -->
+    <div id="kozmondasok" class="page" style="display:none;">
+        <div class="section">
+            <h2>Patak közmondások</h2>
+            <h3>Bölcsességek a <span class="gypsy">cigány</span> filozófus tól</h3>
+            
+            <ol>
+                <li><span class="highlight">"Folydogálj el, kispatak!"</span> - Mondják Pataknak, amikor újra unalmas történetekkel traktál</li>
+                <li><span class="highlight">"Aki Patakot kergeti, az víz után fut!"</span> - Mert soha nem éri utol az álmait</li>
+                <li><span class="highlight">"Patak mellé ne ülj, mert elvisz a <span class="gypsy">cigány</span> ár!"</span></li>
+                <li><span class="highlight">"Inkább Patak, mint patak!"</span> - Mondják a víziszonyosok</li>
+                <li><span class="highlight">"Patak orvosa leszel!"</span> - Amikor valaki nagyon rosszul csinál valamit</li>
+                <li><span class="highlight">"Tiszta, mint Patak zsebe!"</span> - Amikor valami nagyon koszos</li>
+                <li><span class="highlight">"Patak mélyén aranyat találsz!"</span> - Csak hazudnak neked</li>
+                <li><span class="highlight">"Úgy beszélsz, mint Patak a biológiáról!"</span> - Amikor valaki teljesen butaságokat mond</li>
+                <li><span class="highlight">"Patak módra folyik az élet"</span> - Minden rossz irányba megy</li>
+                <li><span class="highlight">"Patak partján ne építs kastélyt!"</span> - Mert mindent ellopnak alólad</li>
+                <li><span class="highlight">"Patakkal a víz mindig mocskos irányba folyik!"</span></li>
+                <li><span class="highlight">"Úgy hazudik, mint Patak a diplomájáról!"</span></li>
+                <li><span class="highlight">"Patak orvosa leszel, ha ezt megeszed!"</span> - Mondják a rosszul kinéző ételeknél</li>
+                <li><span class="highlight">"Több esze van, mint Pataknak a könyveiben!"</span></li>
+                <li><span class="highlight">"Úgy nézel ki, mint Patak a diplomás képe!"</span> - Amikor valaki nagyon kétségbeejtő</li>
+            </ol>
+            
+            <div class="quote">
+                "Ezek a közmondások nem igazak! Vagy... várjunk, ezek közül melyik rossz?"<br>- Patak a közmondásokról
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>Patak saját közmondásai</h3>
+            <p>Patak is alkotott néhány bölcsességet (ami főként hazugság):</p>
+            <ul>
+                <li>"Aki nem hiszi, hogy orvos leszek, az rasszista!"</li>
+                <li>"A pénz nem boldogít, de az orvosoknak annyi van, hogy nekik mégis!"</li>
+                <li>"Ha nem sikerül az orvosi, mindig lehetek politikus!"</li>
+                <li>"A <span class="gypsy">cigány</span> vér nem hazudik - csak én!"</li>
+                <li>"Ha egyszer gazdag orvos leszek, mindenki hozzám fog járni kezelésre... vagy nem?"</li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- Titkok oldal -->
+    <div id="titkok" class="page" style="display:none;">
+        <div class="section">
+            <h2>Titkok, amiket Patak nem akar, hogy megtudj</h2>
+            
+            <ul>
+                <li>Az igazi neve valójában <span class="romanian">Gheorghe Ciganescu</span></li>
+                <li>A "biológia szerelme" valójában abból áll, hogy megnézi a Discoveryn az állatokat</li>
+                <li>Soha nem volt még kapcsolata, csak a képzeletbeli barátnője, akivel "tavaly nyáron szakítottak"</li>
+                <li>Az osztálykirándulásokon mindig őt küldik a szobából, mert túl <span class="gypsy">cigány</span> szagot áraszt</li>
+                <li>A híres "magas igazságérzete" valójában abból áll, hogy mindig ő akarja megmondani, ki a hibás</li>
+                <li>A "magas fizetés" amit orvosként akar, valójában a börtönben a cellatársak zsebpénze</li>
+                <li>Az iskolaasztalán lévő "Dr. Patak" feliratot ő maga karcolta oda</li>
+                <li>A "kedvenc könyve" amit mindig emleget (Gray anatómiája) valójában soha nem nyitotta ki</li>
+                <li>Az összes "orvosi vicce" amit mesél, valójában a TV-ből lopta</li>
+                <li>Azt hiszi, hogy a "sebész" az valami fűszer</li>
+                <li>Egyszer megpróbálta eladni a saját veséjét a dark weben</li>
+                <li>Az iskolai évkönyvben "Legvalószínűtlenebb orvosjelölt" címmel szerepel</li>
+                <li>Van egy titkos naplója, amiben gyakorolja az orvosi aláírását</li>
+                <li>A Facebook profilján már most "Dr. Patak"-ként van bejelentkezve</li>
+                <li>Egyszer megpróbált fehér köpenyt lopni a kórházból, de túl kicsi volt rá</li>
+            </ul>
+            
+            <div class="quote">
+                "Ha ezeket a titkokat kitudják, akkor inkább átmegyek <span class="romanian">román</span> <span class="negro">néger</span> <span class="gypsy">cigány</span> focistának!"<br>- Patak a titkairól
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>Családi titkok</h3>
+            <p>Amiket még a Patak család sem akar, hogy kiderüljenek:</p>
+            <ul>
+                <li>Anyja valójában soha nem akarta, hogy orvos legyen, csak viccelt</li>
+                <li>Apja valójában nem is tudja, hogy létezik</li>
+                <li>A családi ház valójában egy lakókocsi, amit leparkoltak a panel előtt</li>
+                <li>A "családi ezüst" valójában alufólia</li>
+                <li>A "gazdag rokonok", akikről mindig beszél, valójában csak egy szerencsésebb család a szomszédban</li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- Galéria oldal -->
+    <div id="galeria" class="page" style="display:none;">
+        <div class="section">
+            <h2>Képzeletbeli Galéria</h2>
+            <h3>Amilyen képek lehetnének, ha Pataknak lenne valódi élete</h3>
+            
+            <div class="fact-box">
+                <div class="fact-title">Megjegyzés:</div>
+                <p>Mivel Patak nem engedélyezte a valódi képek felhasználását (és senki nem akarja őt fotózni), ezek képzeletbeli képek leírásai.</p>
+            </div>
+            
+            <h3>Gyermekkori képek</h3>
+            <ul>
+                <li><strong>Első nap az óvodában:</strong> Patak már akkor is orvost játszott - ellopta a játék orvosi készletét</li>
+                <li><strong>Általános iskola:</strong> Patak a tábla előtt, ahogy megpróbálja bizonyítani, hogy 2+2=5 (orvosnak lenni nem kell matek)</li>
+                <li><strong>Első börtönlátogatás:</strong> 8 évesen, anyját kereste</li>
+            </ul>
+            
+            <h3>Középiskolai képek</h3>
+            <ul>
+                <li><strong>Biológia óra:</strong> Patak, ahogy a saját vérére kiabál segítségért</li>
+                <li><strong>Iskolai bál:</strong> Egyedül áll a sarokban, fehér ingben (mert azt hiszi, az orvosi köpenynek számít)</li>
+                <li><strong>Osztályfénykép:</strong> Mindenki mással szemben néz, mert senki nem akart mellé ülni</li>
+            </ul>
+            
+            <h3>Jövőbeli képek</h3>
+            <ul>
+                <li><strong>Dr. Patak a kórházban:</strong> A portás épp kirúgja, mert próbál betegektől pénzt kérni</li>
+                <li><strong>Háziorvosi rendelő:</strong> Csak egy üres szoba, mert senki nem megy hozzá</li>
+                <li><strong>Orvosi diploma:</strong> Egy hamisítvány, amit a dark weben vásárolt</li>
+            </ul>
+            
+            <div class="quote">
+                "Engem ne fotózzanak! A fény elveszi a <span class="gypsy">cigány</span> varázsomat!"<br>- Patak a fotózkodásról
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>© 2025 Patak Fan Club - Minden jog fenntartva, főleg a <span class="gypsy">cigány</span> jogok</p>
+        <p>Készült szeretettel és sok <span class="romanian">román</span> indulattal</p>
+    </footer>
+    
+    <script>
+        // Oldalváltó funkció
+        function showPage(pageId) {
+            // Elrejtjük az összes oldalt
+            document.querySelectorAll('.page').forEach(page => {
+                page.style.display = 'none';
+            });
+            
+            // Megjelenítjük a kiválasztott oldalt
+            document.getElementById(pageId).style.display = 'block';
+            
+            // Animáció: oldal elejére ugrás simán
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+        
+        // Alapértelmezettként megjelenítjük a születés oldalt
+        document.addEventListener('DOMContentLoaded', function() {
+            showPage('szuletes');
+            
+            // Random animációk hozzáadása
+            const sections = document.querySelectorAll('.section');
+            sections.forEach((section, index) => {
+                // Random késleltetés az animációkhoz
+                section.style.animationDelay = `${index * 0.1}s`;
+                
+                // Random hover hatások
+                if(Math.random() > 0.5) {
+                    section.addEventListener('mouseenter', function() {
+                        this.style.transform = 'rotate(' + (Math.random() * 2 - 1) + 'deg)';
+                    });
+                    section.addEventListener('mouseleave', function() {
+                        this.style.transform = '';
+                    });
+                }
+            });
+            
+            // Neon effektus a navigációs gombokhoz
+            const navButtons = document.querySelectorAll('.nav-btn');
+            setInterval(() => {
+                navButtons.forEach(btn => {
+                    btn.style.borderColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                    btn.style.color = `hsl(${Math.random() * 360}, 100%, 70%)`;
+                });
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
